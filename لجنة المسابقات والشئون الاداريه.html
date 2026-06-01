@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اتحاد رفاعة لكرة القدم - لجنة المسابقات</title>
+    <style>
+        :root {
+            --primary-color: #1e5a38;
+            --secondary-color: #f4f6f9;
+            --accent-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: normal;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .container {
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            margin-bottom: 80px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .match-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .match-row:last-child { border-bottom: none; }
+        .team { width: 35%; font-weight: bold; }
+        .team.left { text-align: left; }
+        .score { 
+            width: 30%; 
+            text-align: center; 
+            background: #eef7f1; 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        th { background-color: #f8f9fa; color: var(--primary-color); }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .badge.success { background-color: #2ecc71; color: white; }
+        .badge.danger { background-color: var(--accent-color); color: white; }
+
+        /* تنسيق النماذج واستمارات الإدخال */
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .btn:hover { opacity: 0.9; }
+
+        /* القائمة السفلية للتنقل */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            border-top: 1px solid #ddd;
+            z-index: 99;
+        }
+
+        .nav-item {
+            padding: 12px 5px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            text-decoration: none;
+            flex: 1;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        الاتحاد المحلي لكرة القدم - رفاعة
+        <span>تطبيق لجنة المسابقات الإداري</span>
+    </header>
+
+    <div class="container">
+        
+        <!-- صفحة المباريات والنتائج -->
+        <div id="matches" class="page active">
+            <div class="card">
+                <div class="card-title">نتائج مباريات دوري الكرامة</div>
+                <div id="matchesList">
+                    <!-- البيانات تظهر هنا تلقائياً -->
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة كشوفات اللاعبين -->
+        <div id="players" class="page">
+            <div class="card">
+                <div class="card-title">كشوفات اللاعبين المعتمدة</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الرقم</th>
+                            <th>اللاعب</th>
+                            <th>النادي</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playersTableBody">
+                        <!-- البيانات تظهر هنا تلقائياً -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- صفحة القرارات والشكاوي -->
+        <div id="appeals" class="page">
+            <div class="card">
+                <div class="card-title">نتائج الشكاوي والقرارات الرسمية</div>
+                <div id="appealsList">
+                    <!-- البيانات تظهر هنا تلقائياً -->
+                </div>
+            </div>
+        </div>
+
+        <!-- لوحة التحكم (مخفية وتفتح بكلمة مرور) -->
+        <div id="admin" class="page">
+            <div class="card">
+                <div class="card-title">إدخال مباراة جديدة</div>
+                <div class="form-group">
+                    <label>الفريق الأول</label>
+                    <input type="text" id="team1" class="form-control" placeholder="مثال: نادي السلام">
+                </div>
+                <div class="form-group">
+                    <label>الفريق الثاني</label>
+                    <input type="text" id="team2" class="form-control" placeholder="مثال: نادي النهر">
+                </div>
+                <div class="form-group">
+                    <label>النتيجة (مثال: 2 - 1)</label>
+                    <input type="text" id="matchScore" class="form-control" placeholder="0 - 0">
+                </div>
+                <button class="btn" onclick="addMatch()">حفظ المباراة</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">إضافة لاعب للكشوفات</div>
+                <div class="form-group">
+                    <label>الرقم الرياضي</label>
+                    <input type="number" id="pId" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>اسم اللاعب</label>
+                    <input type="text" id="pName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>النادي</label>
+                    <input type="text" id="pClub" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select id="pStatus" class="form-control">
+                        <option value="متاح">متاح للعب</option>
+                        <option value="موقوف">موقوف عقوبة/تراكم</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="addPlayer()">إضافة اللاعب</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">إضافة قرار أو نتيجة شكوى</div>
+                <div class="form-group">
+                    <label>عنوان الشكوى</label>
+                    <input type="text" id="appealTitle" class="form-control" placeholder="مثال: شكوى نادي السلام ضد النهر">
+                </div>
+                <div class="form-group">
+                    <label>نص القرار الصادر</label>
+                    <textarea id="appealText" class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn" onclick="addAppeal()">نشر القرار</button>
+            </div>
+            
+            <button class="btn" style="background-color: #7f8c8d; margin-top: 10px;" onclick="clearAllData()">مسح كل البيانات والبدء من جديد</button>
+        </div>
+
+    </div>
+
+    <!-- قائمة التنقل السفلية -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('matches', this)">المباريات</div>
+        <div class="nav-item" onclick="switchPage('players', this)">الكشوفات</div>
+        <div class="nav-item" onclick="switchPage('appeals', this)">الشكاوي</div>
+        <div class="nav-item" style="color: #7f8c8d;" onclick="checkAdminPass(this)">لوحة التحكم ⚙️</div>
+    </nav>
+
+    <script>
+        // كلمة المرور الافتراضية للوحة التحكم هي: 1234
+        const ADMIN_PASSWORD = "1234";
+
+        // تحميل البيانات عند فتح الصفحة
+        window.onload = function() {
+            loadMatches();
+            loadPlayers();
+            loadAppeals();
+        };
+
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function checkAdminPass(element) {
+            let pass = prompt("الرجاء إدخال كلمة المرور لدخول لوحة تعديل لجنة المسابقات:");
+            if(pass === ADMIN_PASSWORD) {
+                switchPage('admin', element);
+            } else if (pass !== null) {
+                alert("كلمة المرور خاطئة!");
+            }
+        }
+
+        // --- إدارة مباريات اليوم ---
+        function addMatch() {
+            let t1 = document.getElementById('team1').value;
+            let t2 = document.getElementById('team2').value;
+            let score = document.getElementById('matchScore').value;
+            if(!t1 || !t2 || !score) return alert("الرجاء ملء جميع الحقول");
+
+            let matches = JSON.parse(localStorage.getItem('matches')) || [];
+            matches.push({team1: t1, team2: t2, score: score});
+            localStorage.setItem('matches', JSON.stringify(matches));
+            
+            loadMatches();
+            alert("تم حفظ المباراة بنجاح!");
+            document.getElementById('team1').value = ''; document.getElementById('team2').value = ''; document.getElementById('matchScore').value = '';
+        }
+
+        function loadMatches() {
+            let matches = JSON.parse(localStorage.getItem('matches')) || [
+                {team1: "نادي السلام", team2: "نادي النهر", score: "2 - 1"},
+                {team1: "نادي الدومة", team2: "الشعلة", score: "0 - 0"}
+            ];
+            let html = '';
+            matches.forEach(m => {
+                html += `<div class="match-row">
+                    <div class="team">${m.team1}</div>
+                    <div class="score">${m.score}</div>
+                    <div class="team left">${m.team2}</div>
+                </div>`;
+            });
+            document.getElementById('matchesList').innerHTML = html;
+        }
+
+        // --- إدارة كشوفات اللاعبين ---
+        function addPlayer() {
+            let id = document.getElementById('pId').value;
+            let name = document.getElementById('pName').value;
+            let club = document.getElementById('pClub').value;
+            let status = document.getElementById('pStatus').value;
+            if(!id || !name || !club) return alert("الرجاء ملء حقول اللاعب");
+
+            let players = JSON.parse(localStorage.getItem('players')) || [];
+            players.push({id: id, name: name, club: club, status: status});
+            localStorage.setItem('players', JSON.stringify(players));
+
+            loadPlayers();
+            alert("تم إضافة اللاعب لكشف النادي!");
+            document.getElementById('pId').value = ''; document.getElementById('pName').value = ''; document.getElementById('pClub').value = '';
+        }
+
+        function loadPlayers() {
+            let players = JSON.parse(localStorage.getItem('players')) || [
+                {id: "1024", name: "أحمد محمد عبد الله", club: "السلام", status: "متاح"},
+                {id: "1085", name: "خالد عمر الريح", club: "السلام", status: "موقوف"}
+            ];
+            let html = '';
+            players.forEach(p => {
+                let badgeClass = p.status === 'متاح' ? 'success' : 'danger';
+                html += `<tr>
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${p.club}</td>
+                    <td><span class="badge ${badgeClass}">${p.status}</span></td>
+                </tr>`;
+            });
+            document.getElementById('playersTableBody').innerHTML = html;
+        }
+
+        // --- إدارة الشكاوي والقرارات ---
+        function addAppeal() {
+            let title = document.getElementById('appealTitle').value;
+            let text = document.getElementById('appealText').value;
+            if(!title || !text) return alert("الرجاء كتابة تفاصيل القرار");
+
+            let appeals = JSON.parse(localStorage.getItem('appeals')) || [];
+            appeals.push({title: title, text: text});
+            localStorage.setItem('appeals', JSON.stringify(appeals));
+
+            loadAppeals();
+            alert("تم نشر القرار بنجاح!");
+            document.getElementById('appealTitle').value = ''; document.getElementById('appealText').value = '';
+        }
+
+        function loadAppeals() {
+            let appeals = JSON.parse(localStorage.getItem('appeals')) || [
+                {title: "شكوى نادي السلام ضد نادي النهر", text: "بناءً على الفحص الإداري، تقرر قبول الشكوى شكلاً ومضموناً، وتعديل نتيجة المباراة لصالح نادي السلام لمخالفة اللوائح الإدارية المعمول بها في دوري الكرامة."}
+            ];
+            let html = '';
+            appeals.forEach(a => {
+                html += `<div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                    <span class="badge danger" style="margin-bottom: 5px;">قرار رسمي</span>
+                    <strong style="display:block; margin-bottom:5px;">${a.title}:</strong>
+                    <p style="font-size: 0.85rem; margin: 0; color: #555;">${a.text}</p>
+                </div>`;
+            });
+            document.getElementById('appealsList').innerHTML = html;
+        }
+
+        function clearAllData() {
+            if(confirm("هل أنت متأكد من مسح كافة البيانات التي قمت بإدخالها والعودة للبيانات الافتراضية؟")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
